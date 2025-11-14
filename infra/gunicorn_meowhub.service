@@ -1,0 +1,12 @@
+[Unit]
+Description=gunicorn MeowHub service
+After=network.target
+
+[Service]
+User=yc-user
+WorkingDirectory=/srv/meowhub/backend/
+EnvironmentFile=/srv/meowhub/.env
+ExecStart=/srv/meowhub/.venv/bin/gunicorn meowhub_backend.wsgi:application --bind 0.0.0.0:8080
+
+[Install]
+WantedBy=multi-user.target

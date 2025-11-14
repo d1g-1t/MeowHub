@@ -1,5 +1,5 @@
 IP: 158.160.7.192;
 name_taski: https://d1g-1t.bounceme.net;
-name_kittygram: https://kittygram-project.bounceme.net;
+name_meowhub: https://meowhub-project.bounceme.net;
 login: yc-user;
 password: 123487;

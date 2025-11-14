@@ -1,126 +1,100 @@
-import { URL } from "./constants";
+import { API_BASE_URL } from "./constants";
 
-const checkResponse = (res) => {
-  if (res.ok) {
-    return res.json();
+const getToken = () => localStorage.getItem("auth_token");
+
+const buildHeaders = (withAuth = false, extra = {}) => {
+  const headers = {
+    "Content-Type": "application/json",
+    ...extra,
+  };
+  if (withAuth) {
+    const token = getToken();
+    if (token) {
+      headers.authorization = `Token ${token}`;
+    }
   }
-  return res.json().then((err) => Promise.reject(err));
+  return headers;
 };
-const headersWithContentType = { "Content-Type": "application/json" };
 
-export const registerUser = (username, password) => {
-  return fetch(`${URL}/api/users/`, {
+const handleResponse = async (response) => {
+  if (response.status === 204) {
+    return null;
+  }
+  const payload = await response.json();
+  if (!response.ok) {
+    throw payload;
+  }
+  return payload;
+};
+
+const request = (endpoint, options = {}) =>
+  fetch(`${API_BASE_URL}${endpoint}`, options).then(handleResponse);
+
+export const registerUser = (username, password) =>
+  request("/api/users/", {
     method: "POST",
-    headers: headersWithContentType,
+    headers: buildHeaders(),
     body: JSON.stringify({ username, password }),
-  }).then(checkResponse);
-};
+  });
 
-export const loginUser = (username, password) => {
-  return fetch(`${URL}/api/token/login/`, {
+export const loginUser = (username, password) =>
+  request("/api/token/login/", {
     method: "POST",
-    headers: headersWithContentType,
+    headers: buildHeaders(),
     body: JSON.stringify({ username, password }),
-  })
-    .then(checkResponse)
-    .then((data) => {
-      if (data.auth_token) {
-        localStorage.setItem("auth_token", data.auth_token);
-        return data;
-      }
-      return null;
-    });
-};
-
-export const logoutUser = () => {
-  return fetch(`${URL}/api/token/logout/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then((res) => {
-    if (res.status === 204) {
-      localStorage.removeItem("auth_token");
-      return res;
+  }).then((data) => {
+    if (data?.auth_token) {
+      localStorage.setItem("auth_token", data.auth_token);
+      return data;
     }
     return null;
   });
-};
 
-export const getUser = () => {
-  return fetch(`${URL}/api/users/me/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then(checkResponse);
-};
-
-export const getCards = (page = 1) => {
-  return fetch(`${URL}/api/cats/?page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then(checkResponse);
-};
-
-export const getCard = (id) => {
-  return fetch(`${URL}/api/cats/${id}/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then(checkResponse);
-};
-
-export const getAchievements = () => {
-  return fetch(`${URL}/api/achievements/`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then(checkResponse);
-};
-
-export const sendCard = (card) => {
-  return fetch(`${URL}/api/cats/`, {
+export const logoutUser = () =>
+  request("/api/token/logout/", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-    body: JSON.stringify(card),
-  }).then(checkResponse);
-};
-
-export const updateCard = (card, id) => {
-  return fetch(`${URL}/api/cats/${id}/`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-    body: JSON.stringify(card),
-  }).then(checkResponse);
-};
-
-export const deleteCard = (id) => {
-  return fetch(`${URL}/api/cats/${id}/`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Token ${localStorage.getItem("auth_token")}`,
-    },
-  }).then((res) => {
-    if (res.status === 204) {
-      return { status: true };
-    }
-    return { status: false };
+    headers: buildHeaders(true),
+  }).then(() => {
+    localStorage.removeItem("auth_token");
+    return null;
   });
-};
+
+export const getUser = () =>
+  request("/api/users/me/", {
+    headers: buildHeaders(true),
+  });
+
+export const getCards = (page = 1) =>
+  request(`/api/cats/?page=${page}`, {
+    headers: buildHeaders(true),
+  });
+
+export const getCard = (id) =>
+  request(`/api/cats/${id}/`, {
+    headers: buildHeaders(true),
+  });
+
+export const getAchievements = () =>
+  request(`/api/achievements/`, {
+    headers: buildHeaders(true),
+  });
+
+export const sendCard = (card) =>
+  request(`/api/cats/`, {
+    method: "POST",
+    headers: buildHeaders(true),
+    body: JSON.stringify(card),
+  });
+
+export const updateCard = (card, id) =>
+  request(`/api/cats/${id}/`, {
+    method: "PATCH",
+    headers: buildHeaders(true),
+    body: JSON.stringify(card),
+  });
+
+export const deleteCard = (id) =>
+  request(`/api/cats/${id}/`, {
+    method: "DELETE",
+    headers: buildHeaders(true),
+  });
