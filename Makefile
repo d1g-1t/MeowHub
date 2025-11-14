@@ -4,6 +4,9 @@ COMPOSE = docker compose
 
 up:
 	$(COMPOSE) up -d --build
+	@echo "Waiting for database to be ready..."
+	@sleep 5
+	$(COMPOSE) exec -T api uv run python manage.py migrate
 
 build:
 	$(COMPOSE) build
