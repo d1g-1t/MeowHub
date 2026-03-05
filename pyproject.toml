@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "CosmoPaw Team" }]
 dependencies = [
-    "Django>=4.2,<5.0",
+    "Django>=4.2.29,<5.0",
     "djangorestframework>=3.14",
     "djoser>=2.2",
     "django-environ>=0.11",
