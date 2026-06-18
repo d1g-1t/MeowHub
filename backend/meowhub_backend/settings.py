@@ -1,4 +1,6 @@
 from pathlib import Path
+import json
+import logging
 
 import environ
 
@@ -102,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = env('DJANGO_TIME_ZONE')
 USE_I18N = True
-USE_L10N = False
 USE_TZ = True
 
 STATIC_URL = '/static/'
@@ -126,7 +127,6 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'username',
-    'SERIALIZERS': {},
 }
 
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE')
@@ -138,10 +138,27 @@ if not DEBUG:
         CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
 TEST_USER_USERNAME = env('DJANGO_TEST_USER_USERNAME')
 TEST_USER_EMAIL = env('DJANGO_TEST_USER_EMAIL')
 TEST_USER_PASSWORD = env('DJANGO_TEST_USER_PASSWORD')
 DEMO_DATA_ENABLED = env.bool('DEMO_DATA_ENABLED')
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_entry = {
+            'level': record.levelname,
+            'time': self.formatTime(record),
+            'logger': record.name,
+            'message': record.getMessage(),
+        }
+        if record.exc_info:
+            log_entry['exception'] = self.formatException(record.exc_info)
+        return json.dumps(log_entry, ensure_ascii=False)
+
 
 LOGGING = {
     'version': 1,
@@ -150,13 +167,16 @@ LOGGING = {
         'verbose': {
             'format': '[{levelname}] {asctime} {name}: {message}',
             'style': '{',
-        }
+        },
+        'json': {
+            '()': 'meowhub_backend.settings.JsonFormatter',
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        }
+            'formatter': 'json' if not DEBUG else 'verbose',
+        },
     },
     'loggers': {
         'django': {'handlers': ['console'], 'level': 'INFO'},
