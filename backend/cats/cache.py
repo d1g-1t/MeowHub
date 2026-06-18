@@ -1,5 +1,9 @@
+import logging
+
 from django.core.cache import cache
 from django_redis import get_redis_connection
+
+logger = logging.getLogger(__name__)
 
 CAT_LIST_CACHE_PREFIX = 'cats:list:'
 
@@ -15,4 +19,5 @@ def reset_cat_cache() -> None:
         for key in connection.scan_iter(pattern):
             connection.delete(key)
     except Exception:
+        logger.warning('Не удалось сбросить кэш через Redis, выполняется полная очистка')
         cache.clear()
