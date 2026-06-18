@@ -18,3 +18,9 @@ staticfiles
 .gitignore
 .idea
 .vscode
+
+frontend/
+infra/
+*.md
+Makefile
+docker-compose.yml
