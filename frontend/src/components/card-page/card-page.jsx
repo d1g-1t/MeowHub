@@ -15,7 +15,10 @@ import { ButtonHeader } from "../ui/button-header/button-header";
 import styles from "./card-page.module.css";
 
 export const CardPage = ({ data, setData, extraClass = "" }) => {
-  const [achievements, setAchievements] = React.useState("");
+  const achievements = React.useMemo(() => {
+    if (!data.achievements) return "";
+    return data.achievements.map((item) => item.achievement_name).join(", ");
+  }, [data.achievements]);
   const [user] = React.useContext(UserContext);
 
   const history = useHistory();
@@ -25,14 +28,6 @@ export const CardPage = ({ data, setData, extraClass = "" }) => {
     getCard(params.id).then((res) => {
       if (res && res.id) {
         setData(res);
-
-        let resString = "";
-        res.achievements.forEach((item) => {
-          resString
-            ? (resString += `, ${item.achievement_name}`)
-            : (resString = item.achievement_name);
-        });
-        setAchievements(resString);
       }
     });
   }, [params.id, setData]);
@@ -44,13 +39,12 @@ export const CardPage = ({ data, setData, extraClass = "" }) => {
 
   const handleRemoveCard = () => {
     deleteCard(data.id)
-      .then((res) => {
-        if (res.status) {
-          history.replace({ pathname: "/" });
-        }
+      .then(() => {
+        setData({});
+        history.replace({ pathname: "/" });
       })
       .catch((err) => {
-        console.log(err.message);
+        console.error(err.message);
       });
   };
 
