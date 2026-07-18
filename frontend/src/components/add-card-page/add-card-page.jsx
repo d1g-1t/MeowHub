@@ -24,6 +24,7 @@ export const AddCardPage = ({ extraClass = "" }) => {
   });
   const [errorName, setErrorName] = React.useState("");
   const [errorAge, setErrorAge] = React.useState("");
+  const fileInputRef = React.useRef(null);
 
   const history = useHistory();
 
@@ -47,29 +48,28 @@ export const AddCardPage = ({ extraClass = "" }) => {
     }
   };
 
+  const sendCardRequest = (finalCard) => {
+    sendCard(finalCard)
+      .then((res) => {
+        if (res && res.id) {
+          history.push(`/cats/${res.id}`);
+        }
+      })
+      .catch(handleResponse);
+  };
+
   const handleSubmit = () => {
     errorAge && setErrorAge("");
     errorName && setErrorName("");
 
-    const photo = document.querySelector('input[type="file"]').files[0];
-    photo
-      ? getBase64(photo).then((data) => {
-          card["image"] = data;
-          sendCard(card)
-            .then((res) => {
-              if (res && res.id) {
-                history.push(`/cats/${res.id}`);
-              }
-            })
-            .catch(handleResponse);
-        })
-      : sendCard(card)
-          .then((res) => {
-            if (res && res.id) {
-              history.push(`/cats/${res.id}`);
-            }
-          })
-          .catch(handleResponse);
+    const photo = fileInputRef.current?.files?.[0];
+    if (photo) {
+      getBase64(photo).then((data) => {
+        sendCardRequest({ ...card, image: data });
+      });
+    } else {
+      sendCardRequest(card);
+    }
   };
 
   return (
@@ -100,6 +100,7 @@ export const AddCardPage = ({ extraClass = "" }) => {
           className={styles.file_input}
           name="image"
           id="image"
+          ref={fileInputRef}
           onChange={onChangeInput}
         />
         <Input
