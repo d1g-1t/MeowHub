@@ -6,7 +6,7 @@ export const Footer = ({ extraClass = "" }) => {
     <footer className={`${styles.footer} ${extraClass}`}>
       <p
         className={`text text_type_medium-20 text_color_input ${styles.text}`}
-  >{`CosmoPaw ${new Date().getFullYear()}`}</p>
+  >{`MeowHub ${new Date().getFullYear()}`}</p>
     </footer>
   );
 };
