@@ -1,20 +1,5 @@
 export const API_BASE_URL = process.env.REACT_APP_API_URL || "";
 
-export const colorsList = [
-  "#FFE4C4",
-  "#DEB887",
-  "#FFA500",
-  "#FF8C00",
-  "#D2691E",
-  "#8B4513",
-  "#FFFFFF",
-  "#F5F5F5",
-  "#DCDCDC",
-  "#A9A9A9",
-  "#808080",
-  "#000000",
-];
-
 export const colorsNames = {
   "bisque": "#FFE4C4",
   "burlywood": "#DEB887",
@@ -29,6 +14,8 @@ export const colorsNames = {
   "gray": "#808080",
   "black": "#000000",
 };
+
+export const colorsList = Object.values(colorsNames);
 
 export const getBase64 = (file) => {
   return new Promise((resolve, reject) => {
