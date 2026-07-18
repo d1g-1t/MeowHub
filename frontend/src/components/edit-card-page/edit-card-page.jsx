@@ -23,6 +23,7 @@ export const EditCardPage = ({ data, setData, extraClass = "" }) => {
   const [currentFileName, setCurrentFileName] = React.useState("");
   const [errorName, setErrorName] = React.useState("");
   const [errorAge, setErrorAge] = React.useState("");
+  const fileInputRef = React.useRef(null);
 
   const history = useHistory();
 
@@ -69,7 +70,7 @@ export const EditCardPage = ({ data, setData, extraClass = "" }) => {
     errorName && setErrorName("");
 
     const totalCard = {};
-    const photo = document.querySelector('input[type="file"]').files[0];
+    const photo = fileInputRef.current?.files?.[0];
     if (data.name !== card.name) {
       totalCard["name"] = card.name;
     }
@@ -88,25 +89,22 @@ export const EditCardPage = ({ data, setData, extraClass = "" }) => {
       totalCard["achievements"] = card.achievements;
     }
 
-    if (photo) {
-      getBase64(photo).then((data) => {
-        totalCard["image"] = data;
-        updateCard(totalCard, card.id)
-          .then((res) => {
-            if (res && res.id) {
-              history.replace({ pathname: `/cats/${res.id}` });
-            }
-          })
-          .catch(handleResponse);
-      });
-    } else {
-      updateCard(totalCard, card.id)
+    const sendUpdate = (finalCard) => {
+      updateCard(finalCard, card.id)
         .then((res) => {
           if (res && res.id) {
             history.replace({ pathname: `/cats/${res.id}` });
           }
         })
         .catch(handleResponse);
+    };
+
+    if (photo) {
+      getBase64(photo).then((data) => {
+        sendUpdate({ ...totalCard, image: data });
+      });
+    } else {
+      sendUpdate(totalCard);
     }
   };
   
@@ -153,6 +151,7 @@ export const EditCardPage = ({ data, setData, extraClass = "" }) => {
           className={styles.file_input}
           name="image"
           id="image"
+          ref={fileInputRef}
           onChange={onChangeInput}
         />
         <Input
