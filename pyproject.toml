@@ -1,19 +1,19 @@
 [project]
-name = "cosmopaw-platform"
+name = "meowhub"
 version = "0.1.0"
 description = "Современная платформа для обмена историями о котах"
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [{ name = "CosmoPaw Team" }]
+authors = [{ name = "MeowHub Team" }]
 dependencies = [
-    "Django>=4.2.29,<5.0",
+    "Django>=4.2.30,<5.0",
     "djangorestframework>=3.14",
     "djoser>=2.2",
     "django-environ>=0.11",
     "django-redis>=5.4",
     "django-cors-headers>=4.3",
     "psycopg2-binary>=2.9",
-    "Pillow>=10.0",
+    "Pillow>=12.2.0",
     "webcolors>=1.13",
     "gunicorn>=21.2",
 ]
