@@ -79,11 +79,13 @@ class CatSerializer(serializers.ModelSerializer):
     def _sync_achievements(self, cat, achievements):
         if achievements is None:
             return
-        achievement_objects = []
-        for payload in achievements:
-            achievement, _ = Achievement.objects.get_or_create(name=payload['name'])
-            achievement_objects.append(achievement)
-        cat.achievements.set(achievement_objects)
+        names = {payload['name'] for payload in achievements}
+        existing = Achievement.objects.in_bulk(names, field_name='name')
+        to_create = [Achievement(name=name) for name in names if name not in existing]
+        if to_create:
+            created = Achievement.objects.bulk_create(to_create, ignore_conflicts=True)
+            existing = Achievement.objects.in_bulk(names, field_name='name')
+        cat.achievements.set(existing.values())
 
     @transaction.atomic
     def create(self, validated_data):
