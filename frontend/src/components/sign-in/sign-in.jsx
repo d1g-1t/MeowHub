@@ -75,7 +75,7 @@ export const SignIn = ({ extraClass = "" }) => {
       <p
         className={`text text_type_medium-20 text_color_input mb-20 ${styles.subtitle}`}
       >
-  Войдите для доступа к CosmoPaw!
+  Войдите для доступа к MeowHub!
       </p>
       <FormContainer>
         <form className={styles.form}>
