@@ -2,7 +2,8 @@ ARG REACT_APP_API_URL=/api
 
 FROM node:20-alpine AS build
 WORKDIR /app
-ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ENV REACT_APP_API_URL=${REACT_APP_API_URL} \
+    NODE_ENV=production
 COPY package*.json ./
 RUN npm install
 COPY . .
