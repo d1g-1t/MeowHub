@@ -1,5 +1,2 @@
-IP: 158.160.7.192;
-name_taski: https://d1g-1t.bounceme.net;
-name_meowhub: https://meowhub-project.bounceme.net;
-login: yc-user;
-password: 123487;
+# Infrastructure deployment reference
+# See .env.example for required environment variables
