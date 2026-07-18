@@ -21,15 +21,25 @@ function App() {
   const [userState, setUserState] = React.useState({});
   const [currentCard, setCurrentCard] = React.useState({});
   const [queryPage, setQueryPage] = React.useState(1);
+  const [authChecked, setAuthChecked] = React.useState(false);
 
   React.useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) {
-      getUser().then((res) => {
-        if (res && res.id) {
-          setUserState({ id: res.id });
-        }
-      });
+      getUser()
+        .then((res) => {
+          if (res && res.id) {
+            setUserState({ id: res.id });
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("auth_token");
+        })
+        .finally(() => {
+          setAuthChecked(true);
+        });
+    } else {
+      setAuthChecked(true);
     }
   }, []);
 
