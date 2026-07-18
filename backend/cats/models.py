@@ -22,7 +22,7 @@ class Achievement(TimeStampedModel):
     name = models.CharField(max_length=64, unique=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('name', 'created_at')
 
     def __str__(self):
         return self.name
@@ -31,14 +31,6 @@ class Achievement(TimeStampedModel):
 class CatQuerySet(models.QuerySet):
     def with_relations(self):
         return self.select_related('owner').prefetch_related('achievements')
-
-
-class CatManager(models.Manager):
-    def get_queryset(self):
-        return CatQuerySet(self.model, using=self._db)
-
-    def with_relations(self):
-        return self.get_queryset().with_relations()
 
 
 class Cat(TimeStampedModel):
@@ -58,7 +50,7 @@ class Cat(TimeStampedModel):
     )
     image = models.ImageField(upload_to=cat_image_upload_path, null=True, blank=True, default=None)
 
-    objects = CatManager()
+    objects = CatQuerySet.as_manager()
 
     class Meta:
         ordering = ('-created_at', 'name')
