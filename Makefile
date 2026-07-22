@@ -1,19 +1,23 @@
 COMPOSE = docker compose
+MANAGE = $(COMPOSE) run --rm api python manage.py
+MANAGE_EXEC = $(COMPOSE) exec -T api python manage.py
 
-.PHONY: setup up down build logs migrate collectstatic createsuperuser shell stop test
+.PHONY: setup up down build logs migrate collectstatic createsuperuser shell stop test lint
 
 setup:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
-		python -c "import secrets; import sys; data=sys.stdin.read(); print(data.replace('replace-me', secrets.token_urlsafe(50)))" < .env > .env.tmp && mv .env.tmp .env; \
+		openssl rand -base64 48 > /dev/null 2>&1 && \
+		sed -i "s/replace-me/$$(openssl rand -base64 48 | tr -d '\n')/" .env || \
+		python -c "import secrets; d=open('.env').read(); open('.env','w').write(d.replace('replace-me',secrets.token_urlsafe(50)))"; \
 		echo ".env created with generated SECRET_KEY"; \
 	fi
 	$(COMPOSE) up -d --build
-	$(COMPOSE) exec -T api uv run python manage.py migrate
+	$(MANAGE_EXEC) migrate
 
 up:
 	$(COMPOSE) up -d --build
-	$(COMPOSE) exec -T api uv run python manage.py migrate
+	$(MANAGE_EXEC) migrate
 
 build:
 	$(COMPOSE) build
@@ -28,16 +32,20 @@ logs:
 	$(COMPOSE) logs -f api
 
 migrate:
-	$(COMPOSE) run --rm api uv run python manage.py migrate
+	$(MANAGE) migrate
 
 collectstatic:
-	$(COMPOSE) run --rm api uv run python manage.py collectstatic --noinput
+	$(MANAGE) collectstatic --noinput
 
 createsuperuser:
-	$(COMPOSE) run --rm api uv run python manage.py createsuperuser
+	$(MANAGE) createsuperuser
 
 shell:
-	$(COMPOSE) run --rm api uv run python manage.py shell
+	$(MANAGE) shell
 
 test:
-	$(COMPOSE) run --rm api uv run python manage.py test
+	$(MANAGE) test
+
+lint:
+	$(MANAGE_EXEC) pip install ruff
+	$(MANAGE_EXEC) ruff check backend/
