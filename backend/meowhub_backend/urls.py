@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework import routers
 
 from cats.views import AchievementViewSet, CatViewSet
+
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
+
 
 router = routers.DefaultRouter()
 router.register('cats', CatViewSet, basename='cat')
@@ -12,6 +18,7 @@ router.register('achievements', AchievementViewSet, basename='achievement')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/health/', health_check, name='health-check'),
     path('api/', include(router.urls)),
     path('api/', include('djoser.urls')),
     path('api/', include('djoser.urls.authtoken')),
