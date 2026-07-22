@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential libpq-dev curl \
+    && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir uv
@@ -21,4 +21,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 COPY backend/manage.py ./manage.py
 COPY backend ./backend
 
-CMD ["uv", "run", "gunicorn", "meowhub_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "meowhub_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
