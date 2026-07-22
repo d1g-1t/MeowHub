@@ -30,7 +30,11 @@
     "ws": "8.20.1",
     "shell-quote": "1.8.4",
     "@babel/core": "7.29.6",
-    "form-data": "3.0.5"
+    "ajv": "8.18.0",
+    "form-data": "3.0.5",
+    "http-proxy-middleware": "2.0.8",
+    "webpack": "5.104.0",
+    "webpack-dev-server": "5.2.1"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
