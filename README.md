@@ -47,9 +47,28 @@ meowhub/
 | `make build`         | Пересобирает все сервисы.                                              |
 | `make migrate`       | Запускает `python manage.py migrate` внутри контейнера API.            |
 | `make collectstatic` | Собирает статику Django.                                               |
-| `make createsuperuser` | Создаёт суперпользователя через `uv run`.                            |
+| `make createsuperuser` | Создаёт суперпользователя через `python manage.py createsuperuser`.  |
 | `make shell`         | Открывает Django shell внутри контейнера API.                          |
 | `make test`          | Запускает Django тесты.                                                |
+| `make lint`          | Проверяет код бэкенда через ruff.                                      |
+
+### Windows (Git Bash / PowerShell)
+
+Если `make` не установлен (Git Bash на Windows), используйте встроенный скрипт:
+
+```bash
+./make setup
+```
+
+Для PowerShell:
+
+```powershell
+.\setup.ps1
+```
+
+### Linux / macOS / WSL
+
+Убедитесь, что установлен `make` (обычно есть по умолчанию или `apt install make` / `brew install make`).
 
 После `make setup` приложения доступны по адресам:
 
@@ -91,5 +110,5 @@ uv run python manage.py runserver 0.0.0.0:8000
 - **Развёртывание:** см. `infra/default`, `infra/gunicorn_meowhub.service` и `infra/meowhub_site.txt` — они используются для настройки systemd и nginx на сервере.
 - **Фронтенд:** переменная `REACT_APP_API_URL` пробрасывается в Docker build аргумент (по умолчанию `/api`). Для standalone-сборки задайте нужный URL перед `npm run build`.
 
-Готово — MeowHub запускается одной командой `make up` (которая автоматически применяет миграции), журналирует события по-русски и обслуживает контент котов с учётом кэширования и оптимизированных запросов. Удачной работы! 🐾
+Готово — MeowHub запускается одной командой `make setup` (или `./make setup` в Git Bash без GNU Make), журналирует события по-русски и обслуживает контент котов с учётом кэширования и оптимизированных запросов. Удачной работы! 🐾
 ````
