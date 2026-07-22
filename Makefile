@@ -9,12 +9,11 @@ SHELL = sh
 setup:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
-		if command -v openssl >/dev/null 2>&1; then \
-			SECRET=$$(openssl rand -base64 48 2>/dev/null || openssl rand 48 | base64); \
-		else \
-			SECRET=$$(od -vAn -N48 /dev/urandom | tr -d ' \n' || date +%s | sha256sum | head -c 50); \
+		SECRET=$$(cat /dev/urandom 2>/dev/null | tr -dc 'A-Za-z0-9' | head -c 50); \
+		if [ -z "$$SECRET" ]; then \
+			SECRET=$$(date +%s | sha256sum | head -c 50); \
 		fi; \
-		sed "s/replace-me/$${SECRET}/" .env > .env.tmp && mv .env.tmp .env; \
+		sed "s|replace-me|$${SECRET}|" .env > .env.tmp && mv .env.tmp .env; \
 		echo ".env created with generated SECRET_KEY"; \
 	fi
 	$(COMPOSE) up -d --build

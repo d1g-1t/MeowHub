@@ -7,7 +7,7 @@ Set-Location $PSScriptRoot
 
 if (-not (Test-Path .env)) {
     Copy-Item .env.example .env
-    $secret = [Convert]::ToBase64String((1..64 | ForEach-Object { Get-Random -Maximum 256 }))
+    $secret = -join ((48..57 + 65..90 + 97..122 | ForEach-Object { [char]$_ } | Get-Random -Count 50))
     (Get-Content .env) -replace 'replace-me', $secret | Set-Content .env
     Write-Host ".env created with generated SECRET_KEY" -ForegroundColor Green
 }
