@@ -22,7 +22,7 @@ class Achievement(TimeStampedModel):
     name = models.CharField(max_length=64, unique=True)
 
     class Meta:
-        ordering = ('name', 'created_at')
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
