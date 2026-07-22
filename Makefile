@@ -2,14 +2,19 @@ COMPOSE = docker compose
 MANAGE = $(COMPOSE) run --rm api python manage.py
 MANAGE_EXEC = $(COMPOSE) exec -T api python manage.py
 
+SHELL = sh
+
 .PHONY: setup up down build logs migrate collectstatic createsuperuser shell stop test lint
 
 setup:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
-		openssl rand -base64 48 > /dev/null 2>&1 && \
-		sed -i "s/replace-me/$$(openssl rand -base64 48 | tr -d '\n')/" .env || \
-		python -c "import secrets; d=open('.env').read(); open('.env','w').write(d.replace('replace-me',secrets.token_urlsafe(50)))"; \
+		if command -v openssl >/dev/null 2>&1; then \
+			SECRET=$$(openssl rand -base64 48 2>/dev/null || openssl rand 48 | base64); \
+		else \
+			SECRET=$$(od -vAn -N48 /dev/urandom | tr -d ' \n' || date +%s | sha256sum | head -c 50); \
+		fi; \
+		sed "s/replace-me/$${SECRET}/" .env > .env.tmp && mv .env.tmp .env; \
 		echo ".env created with generated SECRET_KEY"; \
 	fi
 	$(COMPOSE) up -d --build
