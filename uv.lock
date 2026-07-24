@@ -362,7 +362,7 @@ requires-dist = [
     { name = "djangorestframework", specifier = ">=3.14" },
     { name = "djoser", specifier = ">=2.2" },
     { name = "gunicorn", specifier = ">=21.2" },
-    { name = "pillow", specifier = ">=12.2.0" },
+    { name = "pillow", specifier = ">=12.3.0" },
     { name = "psycopg2-binary", specifier = ">=2.9" },
     { name = "webcolors", specifier = ">=1.13" },
 ]
